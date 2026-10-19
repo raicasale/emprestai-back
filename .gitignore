@@ -17,6 +17,7 @@ yarn-error.log*
 dist/
 build/
 coverage/
+*.tsbuildinfo
 
 # Sistema operacional e IDEs
 .DS_Store
