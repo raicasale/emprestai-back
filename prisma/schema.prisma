@@ -1,0 +1,135 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// --------------------------------------------------------
+// MULTI-TENANCY & AUTENTICAÇÃO
+// --------------------------------------------------------
+
+model Tenant {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  name      String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  memberships Membership[]
+  equipments  Equipment[]
+  loans       Loan[]
+  auditLogs   AuditLog[]
+
+  @@map("tenants")
+}
+
+enum Role {
+  ADMIN
+  OPERATOR
+  COLLABORATOR
+}
+
+model Membership {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  userId    String   @map("user_id")
+  role      Role     @default(COLLABORATOR)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  loans  Loan[]
+
+  @@unique([tenantId, userId])
+  @@index([userId])
+  @@map("memberships")
+}
+
+// --------------------------------------------------------
+// CATÁLOGO DE EQUIPAMENTOS
+// --------------------------------------------------------
+
+enum EquipmentStatus {
+  AVAILABLE
+  BORROWED
+  MAINTENANCE
+  DECOMMISSIONED
+}
+
+model Equipment {
+  id          String          @id @default(uuid())
+  tenantId    String          @map("tenant_id")
+  code        String
+  name        String
+  category    String
+  description String?
+  status      EquipmentStatus @default(AVAILABLE)
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  loans  Loan[]
+
+  @@unique([tenantId, code])
+  @@index([tenantId, status])
+  @@map("equipments")
+}
+
+// --------------------------------------------------------
+// EMPRÉSTIMOS (LOANS)
+// --------------------------------------------------------
+
+enum LoanStatus {
+  ACTIVE
+  RETURNED
+  OVERDUE
+}
+
+model Loan {
+  id           String     @id @default(uuid())
+  tenantId     String     @map("tenant_id")
+  equipmentId  String     @map("equipment_id")
+  membershipId String     @map("membership_id")
+
+  borrowedAt DateTime  @default(now()) @map("borrowed_at")
+  dueDate    DateTime  @map("due_date")
+  returnedAt DateTime? @map("returned_at")
+
+  status LoanStatus @default(ACTIVE)
+  notes  String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  tenant     Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  equipment  Equipment  @relation(fields: [equipmentId], references: [id], onDelete: Restrict)
+  membership Membership @relation(fields: [membershipId], references: [id], onDelete: Restrict)
+
+  @@index([tenantId, membershipId, status])
+  @@index([tenantId, equipmentId])
+  @@map("loans")
+}
+
+// --------------------------------------------------------
+// AUDITORIA (Exigido pelo ADR-001)
+// --------------------------------------------------------
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  tenantId  String   @map("tenant_id")
+  actorId   String   @map("actor_id")
+  action    String
+  resource  String
+  details   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, createdAt])
+  @@map("audit_logs")
+}
+

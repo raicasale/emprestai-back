@@ -1,0 +1,32 @@
+{
+  "name": "emprestai-back",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/raicasale/emprestai-back.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/raicasale/emprestai-back/issues"
+  },
+  "homepage": "https://github.com/raicasale/emprestai-back#readme",
+  "devDependencies": {
+    "@prisma/client": "5.22.0",
+    "@types/node": "^26.6.3",
+    "dotenv": "^18.0.5",
+    "prisma": "5.22.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}
