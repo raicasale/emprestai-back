@@ -47,3 +47,13 @@ Antes de propor ou implementar qualquer funcionalidade, consulte:
 4. **Commits e PRs:** O gerenciamento de commits, branches e PRs é feito exclusivamente pelo usuário.
 5. **Tecnologias Externas:** Não instalar pacotes ou ferramentas que contrariem as decisões e alternativas descartadas no ADR 001.
 
+---
+
+## Subagentes
+- Ficam em agents/<nome>.md. O frontmatter diz quando delegar; o
+  corpo é a instrução completa do subagente.
+- Subagente não herda esta conversa: ao delegar, passe tudo que o
+  arquivo dele pede como entrada.
+- Se o harness não tiver subagentes, abra uma sessão nova e comece
+  com: "Aja conforme agents/<nome>.md." e as entradas pedidas.
+

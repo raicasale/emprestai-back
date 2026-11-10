@@ -4,8 +4,10 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // ADR 001: Versionamento de rotas com prefixo global /v1
-  app.setGlobalPrefix('v1');
+  // ADR 001: Versionamento de rotas com prefixo global /v1, permitindo root e health diretos
+  app.setGlobalPrefix('v1', {
+    exclude: ['/', 'health'],
+  });
 
   // ADR 001: Habilitar CORS com origem do front
   app.enableCors({
@@ -19,4 +21,3 @@ async function bootstrap() {
 }
 
 bootstrap();
-
