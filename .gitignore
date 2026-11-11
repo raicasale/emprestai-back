@@ -19,6 +19,11 @@ build/
 coverage/
 *.tsbuildinfo
 
+# Arquivos compilados da pasta api/ (gerados pelo tsc, não devem ir pro repo)
+api/index.js
+api/index.js.map
+api/index.d.ts
+
 # Sistema operacional e IDEs
 .DS_Store
 Thumbs.db
